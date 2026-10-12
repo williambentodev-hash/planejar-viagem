@@ -40,6 +40,12 @@ nav button span{font-size:22px}nav .on{color:var(--ac)}
 label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 input,select,textarea{width:100%;font:16px inherit;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 .fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac2);color:#fff;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.dr{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:6}
+.dp{width:78%;max-width:300px;height:100%;background:var(--bg);padding:calc(24px + env(safe-area-inset-top,0px)) 14px 20px;animation:sl .2s;display:flex;flex-direction:column;gap:6px}
+@keyframes sl{from{transform:translateX(-100%)}}
+.dp button{border:0;background:var(--card);color:var(--tx);font:600 17px inherit;padding:14px;border-radius:14px;text-align:left}
+.dp .on{background:var(--ac);color:#fff}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:12px}.top button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:12px;width:44px;height:44px;font-size:22px}.top b{font-size:18px}
 #toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#1d2b32;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
 #toast.s{opacity:1}
 </style>
@@ -53,10 +59,11 @@ input,select,textarea{width:100%;font:16px inherit;padding:12px;border-radius:12
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,doc,setDoc,deleteDoc,collection,onSnapshot,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const FB={apiKey:"AIzaSyDoOJQTvAKQQTlwygpowr2spe0auw_IZw8",authDomain:"viagem-9295b.firebaseapp.com",projectId:"viagem-9295b",storageBucket:"viagem-9295b.firebasestorage.app",messagingSenderId:"563404899082",appId:"1:563404899082:web:f2f1e6a6ca432ade08b0f3"};
-const db=initializeFirestore(initializeApp(FB),{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
+const db=initializeFirestore(initializeApp(FB),{experimentalAutoDetectLongPolling:true,localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
 const KEY='viagem-rio-v1';
 const CATS={hotel:['🏨','Hotel'],rest:['🍴','Restaurante'],passeio:['🎟️','Passeio'],lazer:['🏖️','Lazer'],transp:['🚗','Transporte'],viagem:['✈️','Viagem'],compras:['🛍️','Compras'],outros:['📌','Outros']};
 const ECATS=['Hotel','Alimentação','Passeios','Transporte','Compras','Outros'];
+const TABS=[['hoje','🧭','Hoje'],['rot','🗓️','Roteiro'],['ide','💡','Ideias'],['gas','💰','Gastos'],['mais','⚙️','Mais']];
 const seed=()=>({
  trip:{name:'Rio de Janeiro ❤️',start:'2026-12-12',end:'2026-12-18',budget:5000},
  hotel:{name:'Hotel Copacabana',addr:'Av. Atlântica, 1500, Copacabana, Rio de Janeiro',cin:'12/12 às 14:00',cout:'18/12 às 12:00',tel:'(21) 99999-0000',link:'',code:'RIO-48291',note:'Café da manhã incluso.'},
@@ -72,21 +79,25 @@ const seed=()=>({
  exp:[{id:1,desc:'Hotel (entrada)',cat:'Hotel',val:1200,date:'2026-10-01',note:''},{id:2,desc:'Passagens',cat:'Transporte',val:900,date:'2026-09-20',note:''}],
  sel:'2026-12-13'
 });
-let S={...seed(),acts:[],exp:[]},T=null;
+let S={...seed(),acts:[],exp:[],ideas:[]},T=null;
 try{T=new URLSearchParams(location.search).get('t')||localStorage.getItem(KEY)}catch(e){}
 const col=n=>collection(db,'trips',T,n),ref=(n,id)=>doc(db,'trips',T,n,String(id));
 const sortA=()=>S.acts.sort((x,y)=>x.date.localeCompare(y.date)||x.time.localeCompare(y.time)||(x.ord-y.ord));
 const saveMeta=()=>setDoc(ref('meta','main'),{trip:S.trip,hotel:S.hotel});
 const saveAct=a=>{a.ord=a.ord??Date.now();return setDoc(ref('acts',a.id),a)};
 const saveExp=e=>setDoc(ref('exp',e.id),e);
+const saveIdea=i=>setDoc(ref('ideas',i.id),i);
 const seedAll=()=>{const s=seed(),b=writeBatch(db);b.set(ref('meta','main'),{trip:s.trip,hotel:s.hotel});s.acts.forEach(a=>b.set(ref('acts',a.id),{...a,ord:a.id}));s.exp.forEach(e=>b.set(ref('exp',e.id),e));return b.commit()};
-let unsubs=[];
+let unsubs=[],ST='conectando…';
+const err=e=>{ST='Erro: '+(e&&e.code||e&&e.message||e);toast('Erro de sincronização');render()};
+addEventListener('unhandledrejection',e=>err(e.reason));
 function connect(){unsubs.forEach(u=>u());unsubs=[];
- unsubs.push(onSnapshot(ref('meta','main'),s=>{if(s.exists()){Object.assign(S,s.data());render()}else if(!s.metadata.fromCache)seedAll()},()=>toast('Erro de sincronização')));
- unsubs.push(onSnapshot(col('acts'),s=>{S.acts=s.docs.map(d=>d.data());sortA();render()}));
- unsubs.push(onSnapshot(col('exp'),s=>{S.exp=s.docs.map(d=>d.data());S.exp.sort((a,b)=>a.id-b.id);render()}))}
+ unsubs.push(onSnapshot(ref('meta','main'),s=>{ST=s.metadata.fromCache?'offline — dados só neste aparelho':'sincronizado';if(s.exists()){Object.assign(S,s.data());render()}else if(!s.metadata.fromCache)seedAll()},err));
+ unsubs.push(onSnapshot(col('acts'),s=>{ST=s.metadata.hasPendingWrites?'enviando…':s.metadata.fromCache?'offline — dados só neste aparelho':'sincronizado';S.acts=s.docs.map(d=>d.data());sortA();render()},err));
+ unsubs.push(onSnapshot(col('exp'),s=>{S.exp=s.docs.map(d=>d.data());S.exp.sort((a,b)=>a.id-b.id);render()},err));
+ unsubs.push(onSnapshot(col('ideas'),s=>{S.ideas=s.docs.map(d=>d.data()).sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||a.id-b.id);render()},err))}
 function askCode(){modal('<h2 style="margin-top:0">Código da viagem</h2><p class="sub">Usem o mesmo código nos dois celulares. Escolham algo difícil de adivinhar.</p><input id="cd" placeholder="ex: rio-2026-xk9"><button class="btn" data-a="code">Entrar</button>')}
-let tab='hoje',onSave=null;
+let tab='hoje',flt='all',onSave=null;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const brl=n=>(+n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
@@ -102,7 +113,7 @@ function tl(d){const l=dayActs(d);if(!l.length)return'<p class="sub">Nada planej
 function render(){
  const ds=days(),t=today();
  $('#fab').style.display=tab==='mais'?'none':'block';
- $('#nav').innerHTML=[['hoje','🧭','Hoje'],['rot','🗓️','Roteiro'],['gas','💰','Gastos'],['mais','⚙️','Mais']].map(x=>`<button class="${tab===x[0]?'on':''}" data-a="tab" data-i="${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join('');
+ $('#nav').innerHTML=TABS.map(x=>`<button class="${tab===x[0]?'on':''}" data-a="tab" data-i="${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join('');
  let h='';
  if(tab==='hoje'){
   const day=ds.includes(t)?t:(t<ds[0]?ds[0]:ds[ds.length-1]);
@@ -123,15 +134,19 @@ function render(){
   <button class="btn g" data-a="budget">Alterar orçamento</button><h2>Lançamentos</h2>
   ${S.exp.slice().reverse().map(e=>`<div class="card" data-a="expdel" data-i="${e.id}"><div class="row" style="justify-content:space-between"><div><b>${esc(e.desc)}</b><div class="sub">${e.cat} · ${dm(e.date)}${e.note?' · '+esc(e.note):''}</div></div><b style="flex:none;text-align:right">${brl(e.val)}</b></div></div>`).join('')||'<p class="sub">Sem gastos.</p>'}<p class="sub">Toque em um gasto para excluir.</p>`;
  }
+ if(tab==='ide'){
+  const L=S.ideas.filter(i=>flt==='all'||(flt==='outros'?!['rest','passeio'].includes(i.cat):i.cat===flt));
+  h=`<h2>Ideias</h2><p class="sub">Lugares para decidir depois. Toque para ver ou mandar para o roteiro.</p><div class="chips">${[['all','Todos'],['rest','🍴 Restaurantes'],['passeio','🎟️ Passeios'],['outros','📌 Outros']].map(c=>`<button class="chip ${flt===c[0]?'on':''}" data-a="flt" data-i="${c[0]}">${c[1]}</button>`).join('')}</div>`+(L.map(i=>`<div class="card" data-a="idet" data-i="${i.id}" style="display:flex;gap:10px;align-items:center"><span class="em">${(CATS[i.cat]||CATS.outros)[0]}</span><div><b>${i.fav?'⭐ ':''}${esc(i.name)}</b>${i.addr?`<div class="sub">📍 ${esc(i.addr)}</div>`:''}${i.note?`<div class="sub">${esc(i.note)}</div>`:''}</div></div>`).join('')||'<p class="sub">Nenhuma ideia ainda. Toque no + para adicionar.</p>');
+ }
  if(tab==='mais'){
   const H=S.hotel;
   h=`<h2>Hospedagem</h2><div class="card"><b style="font-size:20px">🏨 ${esc(H.name)}</b><p class="sub">📍 ${esc(H.addr)}</p><p>Check-in: ${esc(H.cin)}<br>Check-out: ${esc(H.cout)}${H.tel?`<br>Tel: ${esc(H.tel)}`:''}</p>${H.code?`<p>Reserva: <b>${esc(H.code)}</b></p>`:''}${H.note?`<p class="sub">${esc(H.note)}</p>`:''}
   <a class="btn" target="_blank" rel="noopener" href="${maps({addr:H.addr,place:H.name})}">Como chegar</a>
   <div class="row">${H.code?'<button class="btn g" data-a="copy">Copiar código</button>':''}${H.link?`<a class="btn g" target="_blank" rel="noopener" href="${esc(H.link)}">Link</a>`:''}</div>
   <button class="btn g" data-a="hedit">Editar hotel</button></div>
-  <h2>Viagem</h2><div class="card"><p class="sub">Código: <b>${esc(T)}</b> · sincronizado</p><button class="btn g" style="margin:0 0 8px" data-a="ncode">Trocar código</button><button class="btn g" style="margin:0" data-a="tedit">Editar nome e datas</button><button class="btn g" data-a="theme">Alternar modo escuro</button><button class="btn r" data-a="reset">Restaurar dados de exemplo</button></div>`;
+  <h2>Viagem</h2><div class="card"><p class="sub">Código: <b>${esc(T)}</b> · ${esc(ST)}</p><button class="btn g" style="margin:0 0 8px" data-a="ncode">Trocar código</button><button class="btn g" style="margin:0" data-a="tedit">Editar nome e datas</button><button class="btn g" data-a="theme">Alternar modo escuro</button><button class="btn r" data-a="reset">Restaurar dados de exemplo</button></div>`;
  }
- $('#app').innerHTML='<div>'+h+'</div>';
+ $('#app').innerHTML='<div><div class="top"><button data-a="menu" aria-label="Menu">☰</button><b>'+esc(TABS.find(t=>t[0]===tab)[2])+'</b></div>'+(ST!=='sincronizado'?'<div class="card" style="border-color:'+(ST.startsWith('Erro')?'#d64545':'var(--ac2)')+'">'+(ST.startsWith('Erro')?'⚠️ ':'☁️ ')+esc(ST)+'<br><span class="sub">Código: '+esc(T)+'</span></div>':'')+h+'</div>';
 }
 function modal(html){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="sheet">'+html+'</div>';o.addEventListener('click',e=>{if(e.target===o)closeM()});document.body.appendChild(o)}
 function closeM(){document.querySelectorAll('.ov').forEach(o=>o.remove())}
@@ -143,19 +158,34 @@ function form(title,fields,vals,cb){
   return`<label>${f[1]}</label>${i}`}).join('')+'<button class="btn" data-a="fsave">Salvar</button><button class="btn g" data-a="close">Cancelar</button>');
  onSave=()=>{const r={};document.querySelectorAll('.sheet [name]').forEach(el=>r[el.name]=el.value);cb(r)};
 }
-const actForm=(a,date)=>form(a?'Editar atividade':'Nova atividade',[['title','Título'],['time','Horário','time'],['date','Dia','select',days().map(d=>[d,dm(d)])],['cat','Categoria','select',Object.entries(CATS).map(([k,v])=>[k,v[0]+' '+v[1]])],['place','Local'],['addr','Endereço'],['note','Observação','area'],['link','Link'],['val','Valor (R$)','number']],a||{time:'09:00',date,cat:'outros'},r=>{
+const actForm=(a,date,pre)=>form(a?'Editar atividade':'Nova atividade',[['title','Título'],['time','Horário','time'],['date','Dia','select',days().map(d=>[d,dm(d)])],['cat','Categoria','select',Object.entries(CATS).map(([k,v])=>[k,v[0]+' '+v[1]])],['place','Local'],['addr','Endereço'],['note','Observação','area'],['link','Link'],['val','Valor (R$)','number']],a||{time:'09:00',date,cat:'outros',...pre},r=>{
  if(!r.title.trim())return toast('Informe um título');
  r.val=+r.val||0;
  if(a){Object.assign(a,r);saveAct(a)}else saveAct({id:Date.now(),done:false,...r});
  closeM();toast('Salvo ✓')});
+const ideaForm=i=>form(i?'Editar ideia':'Nova ideia',[['name','Nome'],['cat','Tipo','select',[['rest','🍴 Restaurante'],['passeio','🎟️ Passeio'],['outros','📌 Outros']]],['addr','Endereço / bairro'],['val','Valor médio (R$)','number'],['link','Link'],['note','Observação','area']],i||{cat:'rest'},r=>{if(!r.name.trim())return toast('Informe um nome');r.val=+r.val||0;if(i){Object.assign(i,r);saveIdea(i)}else saveIdea({id:Date.now(),fav:false,...r});closeM();toast('Salvo ✓')});
 const A={
  tab(i){tab=i;render();scrollTo(0,0)},
  sel(i){S.sel=i;render()},
  close:closeM,
- code(){const v=$('#cd').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');if(v.length<4)return toast('Mínimo 4 caracteres');T=v;try{localStorage.setItem(KEY,v)}catch(e){}closeM();S.acts=[];S.exp=[];connect();render()},
+ code(){const v=$('#cd').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');if(v.length<4)return toast('Mínimo 4 caracteres');T=v;try{localStorage.setItem(KEY,v)}catch(e){}closeM();S.acts=[];S.exp=[];S.ideas=[];connect();render()},
  ncode(){askCode()},
+ menu(){const o=document.createElement('div');o.className='dr';o.dataset.a='dclose';o.innerHTML='<div class="dp"><b style="font-size:20px;margin:0 4px 8px">'+esc(S.trip.name)+'</b>'+TABS.map(t=>`<button class="${tab===t[0]?'on':''}" data-a="go" data-i="${t[0]}">${t[1]} ${t[2]}</button>`).join('')+'</div>';document.body.appendChild(o)},
+ dclose(){document.querySelectorAll('.dr').forEach(o=>o.remove())},
+ go(i){A.dclose();A.tab(i)},
+ flt(i){flt=i;render()},
+ idet(i){const x=S.ideas.find(k=>k.id==i);if(!x)return;const c=CATS[x.cat]||CATS.outros;
+  modal(`<div class="sub">${c[0]} ${c[1]}</div><h1 style="margin:4px 0">${esc(x.name)}</h1>${x.addr?`<p>📍 ${esc(x.addr)}</p>`:''}${x.note?`<p>📝 ${esc(x.note)}</p>`:''}${x.val?`<p><b>${brl(x.val)}</b></p>`:''}
+  <button class="btn" data-a="ito" data-i="${x.id}">Adicionar ao roteiro</button>
+  <a class="btn g" target="_blank" rel="noopener" href="${maps({addr:x.addr,place:x.name})}">Como chegar</a>${x.link?`<a class="btn g" target="_blank" rel="noopener" href="${esc(x.link)}">Abrir link</a>`:''}
+  <button class="btn g" data-a="ifav" data-i="${x.id}">${x.fav?'Remover dos favoritos':'⭐ Favoritar'}</button>
+  <div class="row"><button class="btn g" data-a="iedit" data-i="${x.id}">Editar</button><button class="btn r" data-a="idel" data-i="${x.id}">Excluir</button></div>`)},
+ ifav(i){const x=S.ideas.find(k=>k.id==i);x.fav=!x.fav;saveIdea(x);closeM();toast(x.fav?'Favoritado ⭐':'Removido')},
+ iedit(i){closeM();ideaForm(S.ideas.find(k=>k.id==i))},
+ idel(i){if(!confirm('Excluir esta ideia?'))return;deleteDoc(ref('ideas',i));closeM();toast('Excluída')},
+ ito(i){const x=S.ideas.find(k=>k.id==i);closeM();actForm(null,S.sel,{title:x.name,cat:x.cat,place:x.name,addr:x.addr,link:x.link,note:x.note,val:x.val})},
  fsave(){onSave&&onSave()},
- fab(){if(tab==='gas')form('Novo gasto',[['desc','Descrição'],['val','Valor (R$)','number'],['cat','Categoria','select',ECATS.map(c=>[c,c])],['date','Data','date'],['note','Observação']],{cat:'Alimentação',date:today()},r=>{if(!r.desc.trim()||!(+r.val>0))return toast('Preencha descrição e valor');saveExp({id:Date.now(),...r,val:+r.val});closeM();toast('Gasto salvo ✓')});
+ fab(){if(tab==='ide')return ideaForm();if(tab==='gas')form('Novo gasto',[['desc','Descrição'],['val','Valor (R$)','number'],['cat','Categoria','select',ECATS.map(c=>[c,c])],['date','Data','date'],['note','Observação']],{cat:'Alimentação',date:today()},r=>{if(!r.desc.trim()||!(+r.val>0))return toast('Preencha descrição e valor');saveExp({id:Date.now(),...r,val:+r.val});closeM();toast('Gasto salvo ✓')});
   else{const t=today(),ds=days();actForm(null,tab==='rot'?S.sel:(ds.includes(t)?t:ds[0]))}},
  det(i){const a=S.acts.find(x=>x.id==i);if(!a)return;
   modal(`<div class="sub">${CATS[a.cat][0]} ${CATS[a.cat][1]} · ${dm(a.date)}</div><h1 style="margin:4px 0">${esc(a.title)}</h1><b>${a.time}</b>${a.place?`<p>📍 ${esc(a.place)}</p>`:''}${a.addr?`<p class="sub">${esc(a.addr)}</p>`:''}${a.note?`<p>📝 ${esc(a.note)}</p>`:''}${a.val?`<p><b>${brl(a.val)}</b></p>`:''}
