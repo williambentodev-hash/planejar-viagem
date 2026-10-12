@@ -1,474 +1,183 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Maceio</title>
-    <style>
-        :root {
-            --bg: #f6f4ef;
-            --card: #fff;
-            --tx: #1d2b32;
-            --mut: #76858c;
-            --ac: #0e9aa7;
-            --ac2: #ff7a59;
-            --bd: #e8e4da;
-            --ok: #3aa76d;
-            box-sizing: border-box;
-            padding-top: env(safe-area-inset-top, 0px);
-            padding-bottom: env(safe-area-inset-bottom, 0px)
-        }
-
-        @media(prefers-color-scheme:dark) {
-            :root:not([data-theme="light"]) {
-                --bg: #10181c;
-                --card: #1a262c;
-                --tx: #eef3f4;
-                --mut: #8fa1a8;
-                --bd: #2a3a41
-            }
-        }
-
-        :root[data-theme="dark"] {
-            --bg: #10181c;
-            --card: #1a262c;
-            --tx: #eef3f4;
-            --mut: #8fa1a8;
-            --bd: #2a3a41
-        }
-
-        html {
-            scroll-padding-top: env(safe-area-inset-top, 0px)
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--tx);
-            font: 16px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
-            -webkit-tap-highlight-color: transparent
-        }
-
-        main {
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 16px 16px 110px;
-            animation: f .25s
-        }
-
-        @keyframes f {
-            from {
-                opacity: 0;
-                transform: translateY(6px)
-            }
-        }
-
-        .hero {
-            border-radius: 24px;
-            padding: 24px 20px;
-            color: #fff;
-            background: linear-gradient(135deg, #0e9aa7, #2b6fb5 60%, #ff7a59);
-            margin-bottom: 18px
-        }
-
-        .hero h1 {
-            margin: 0;
-            font-size: 28px
-        }
-
-        .hero p {
-            margin: 4px 0 0;
-            opacity: .9
-        }
-
-        .pill {
-            display: inline-block;
-            margin-top: 12px;
-            background: rgba(255, 255, 255, .22);
-            border-radius: 99px;
-            padding: 6px 12px;
-            font-size: 14px
-        }
-
-        h2 {
-            font-size: 13px;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            color: var(--mut);
-            margin: 20px 4px 8px
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--bd);
-            border-radius: 18px;
-            padding: 14px 16px;
-            margin-bottom: 10px
-        }
-
-        .next {
-            border: 2px solid var(--ac);
-        }
-
-        .next b {
-            font-size: 20px
-        }
-
-        .tl {
-            display: flex;
-            gap: 12px;
-            align-items: stretch;
-            margin-bottom: 8px;
-            cursor: pointer
-        }
-
-        .tm {
-            width: 48px;
-            text-align: right;
-            font-weight: 600;
-            font-size: 14px;
-            padding-top: 14px;
-            color: var(--mut)
-        }
-
-        .tl .card {
-            flex: 1;
-            margin: 0;
-            display: flex;
-            gap: 10px;
-            align-items: center
-        }
-
-        .em {
-            font-size: 24px
-        }
-
-        .done .t {
-            text-decoration: line-through;
-            opacity: .5
-        }
-
-        .sub {
-            color: var(--mut);
-            font-size: 14px
-        }
-
-        .btn {
-            border: 0;
-            border-radius: 14px;
-            padding: 14px 16px;
-            font: 600 16px inherit;
-            background: var(--ac);
-            color: #fff;
-            width: 100%;
-            margin-top: 8px;
-            cursor: pointer;
-            display: block;
-            text-align: center;
-            text-decoration: none
-        }
-
-        .btn.g {
-            background: transparent;
-            color: var(--ac);
-            border: 1.5px solid var(--ac)
-        }
-
-        .btn.r {
-            background: transparent;
-            color: #d64545;
-            border: 1.5px solid #d64545
-        }
-
-        .row {
-            display: flex;
-            gap: 8px
-        }
-
-        .row>* {
-            flex: 1
-        }
-
-        .chips {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 2px 0 8px
-        }
-
-        .chip {
-            flex: none;
-            border: 1px solid var(--bd);
-            background: var(--card);
-            color: var(--tx);
-            border-radius: 14px;
-            padding: 10px 14px;
-            font: 600 14px inherit;
-            text-align: center
-        }
-
-        .chip.on {
-            background: var(--ac);
-            color: #fff;
-            border-color: var(--ac)
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px
-        }
-
-        .grid .card {
-            margin: 0
-        }
-
-        .grid b {
-            font-size: 20px;
-            display: block
-        }
-
-        nav {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--card);
-            border-top: 1px solid var(--bd);
-            display: flex;
-            padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px))
-        }
-
-        nav button {
-            flex: 1;
-            border: 0;
-            background: none;
-            color: var(--mut);
-            font: 600 12px inherit;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px
-        }
-
-        nav button span {
-            font-size: 22px
-        }
-
-        nav .on {
-            color: var(--ac)
-        }
-
-        .ov {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .45);
-            display: flex;
-            align-items: flex-end;
-            z-index: 5
-        }
-
-        .sheet {
-            background: var(--bg);
-            width: 100%;
-            max-width: 520px;
-            margin: 0 auto;
-            border-radius: 24px 24px 0 0;
-            padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
-            max-height: 90%;
-            overflow: auto;
-            animation: f .2s
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            color: var(--mut);
-            margin: 10px 0 4px
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            font: 16px inherit;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--bd);
-            background: var(--card);
-            color: var(--tx)
-        }
-
-        .fab {
-            position: fixed;
-            right: 18px;
-            bottom: calc(84px + env(safe-area-inset-bottom, 0px));
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: 0;
-            background: var(--ac2);
-            color: #fff;
-            font-size: 30px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, .25)
-        }
-
-        #toast {
-            position: fixed;
-            left: 50%;
-            bottom: 100px;
-            transform: translateX(-50%);
-            background: #1d2b32;
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 99px;
-            font-size: 14px;
-            opacity: 0;
-            transition: .25s;
-            pointer-events: none;
-            z-index: 9
-        }
-
-        #toast.s {
-            opacity: 1
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rio de Janeiro ❤️</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--tx:#1d2b32;--mut:#76858c;--ac:#0e9aa7;--ac2:#ff7a59;--bd:#e8e4da;--ok:#3aa76d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10181c;--card:#1a262c;--tx:#eef3f4;--mut:#8fa1a8;--bd:#2a3a41}}
+:root[data-theme="dark"]{--bg:#10181c;--card:#1a262c;--tx:#eef3f4;--mut:#8fa1a8;--bd:#2a3a41}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:16px 16px 110px;animation:f .25s}
+@keyframes f{from{opacity:0;transform:translateY(6px)}}
+.hero{border-radius:24px;padding:24px 20px;color:#fff;background:linear-gradient(135deg,#0e9aa7,#2b6fb5 60%,#ff7a59);margin-bottom:18px}
+.hero h1{margin:0;font-size:28px}.hero p{margin:4px 0 0;opacity:.9}
+.pill{display:inline-block;margin-top:12px;background:rgba(255,255,255,.22);border-radius:99px;padding:6px 12px;font-size:14px}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:20px 4px 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px 16px;margin-bottom:10px}
+.next{border:2px solid var(--ac);}
+.next b{font-size:20px}
+.tl{display:flex;gap:12px;align-items:stretch;margin-bottom:8px;cursor:pointer}
+.tm{width:48px;text-align:right;font-weight:600;font-size:14px;padding-top:14px;color:var(--mut)}
+.tl .card{flex:1;margin:0;display:flex;gap:10px;align-items:center}
+.em{font-size:24px}.done .t{text-decoration:line-through;opacity:.5}
+.sub{color:var(--mut);font-size:14px}
+.btn{border:0;border-radius:14px;padding:14px 16px;font:600 16px inherit;background:var(--ac);color:#fff;width:100%;margin-top:8px;cursor:pointer;display:block;text-align:center;text-decoration:none}
+.btn.g{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}.btn.r{background:transparent;color:#d64545;border:1.5px solid #d64545}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px}
+.chip{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:14px;padding:10px 14px;font:600 14px inherit;text-align:center}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid .card{margin:0}.grid b{font-size:20px;display:block}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;border:0;background:none;color:var(--mut);font:600 12px inherit;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:22px}nav .on{color:var(--ac)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:var(--bg);width:100%;max-width:520px;margin:0 auto;border-radius:24px 24px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto;animation:f .2s}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:16px inherit;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac2);color:#fff;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+#toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#1d2b32;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+#toast.s{opacity:1}
+</style>
 </head>
-
 <body>
-    <main id="app"></main>
-    <button class="fab" id="fab" data-a="fab" aria-label="Adicionar">+</button>
-    <nav id="nav"></nav>
-    <div id="toast"></div>
-    <script>
-        const KEY = 'viagem-rio-v1';
-        const CATS = { hotel: ['🏨', 'Hotel'], rest: ['🍴', 'Restaurante'], passeio: ['🎟️', 'Passeio'], lazer: ['🏖️', 'Lazer'], transp: ['🚗', 'Transporte'], viagem: ['✈️', 'Viagem'], compras: ['🛍️', 'Compras'], outros: ['📌', 'Outros'] };
-        const ECATS = ['Hotel', 'Alimentação', 'Passeios', 'Transporte', 'Compras', 'Outros'];
-        const seed = () => ({
-            trip: { name: 'Maceio', start: '2026-12-06', end: '2026-12-11', budget: 5000 },
-            hotel: { name: 'Hotel Copacabana', addr: 'Av. Atlântica, 1500, Copacabana, Rio de Janeiro', cin: '12/12 às 14:00', cout: '18/12 às 12:00', tel: '(21) 99999-0000', link: '', code: 'RIO-48291', note: 'Café da manhã incluso.' },
-            acts: [
-                { id: 1, date: '2026-12-12', time: '07:00', title: 'Voo para o Rio', cat: 'viagem', place: 'Aeroporto Santos Dumont', addr: '', note: '', link: '', val: 0, done: false },
-                { id: 2, date: '2026-12-12', time: '14:00', title: 'Check-in no hotel', cat: 'hotel', place: 'Hotel Copacabana', addr: 'Av. Atlântica, 1500, Copacabana', note: '', link: '', val: 0, done: false },
-                { id: 3, date: '2026-12-12', time: '20:00', title: 'Jantar', cat: 'rest', place: 'Arab de Copacabana', addr: '', note: '', link: '', val: 160, done: false },
-                { id: 4, date: '2026-12-13', time: '08:00', title: 'Café da manhã', cat: 'rest', place: 'Hotel Copacabana', addr: '', note: '', link: '', val: 0, done: false },
-                { id: 5, date: '2026-12-13', time: '10:30', title: 'Cristo Redentor', cat: 'passeio', place: 'Cosme Velho', addr: 'Estr. Cristo Redentor, Cosme Velho, Rio de Janeiro', note: 'Chegar 30 minutos antes.', link: 'https://www.google.com', val: 180, done: false },
-                { id: 6, date: '2026-12-13', time: '13:00', title: 'Almoço', cat: 'rest', place: 'Santa Teresa', addr: '', note: '', link: '', val: 140, done: false },
-                { id: 7, date: '2026-12-13', time: '15:30', title: 'Praia de Copacabana', cat: 'lazer', place: 'Copacabana', addr: '', note: 'Levar protetor solar.', link: '', val: 0, done: false },
-                { id: 8, date: '2026-12-13', time: '20:00', title: 'Jantar', cat: 'rest', place: 'Lapa', addr: '', note: '', link: '', val: 220, done: false }],
-            exp: [{ id: 1, desc: 'Hotel (entrada)', cat: 'Hotel', val: 1200, date: '2026-10-01', note: '' }, { id: 2, desc: 'Passagens', cat: 'Transporte', val: 900, date: '2026-09-20', note: '' }],
-            sel: '2026-12-13'
-        });
-        let S; try { S = JSON.parse(localStorage.getItem(KEY)) } catch (e) { }
-        if (!S || !S.trip) S = seed();
-        const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) { } };
-        let tab = 'hoje', onSave = null;
-        const $ = s => document.querySelector(s);
-        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const brl = n => (+n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
-        const dm = d => d.slice(8) + '/' + d.slice(5, 7);
-        const MES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-        const days = () => { const r = []; let d = new Date(S.trip.start + 'T12:00'); const e = new Date(S.trip.end + 'T12:00'); while (d <= e) { r.push(d.toISOString().slice(0, 10)); d.setDate(d.getDate() + 1) } return r };
-        const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') };
-        const dayActs = d => S.acts.filter(a => a.date === d);
-        const maps = a => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.addr || a.place || a.title);
-        function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('s'); setTimeout(() => t.classList.remove('s'), 1600) }
-        function tl(d) {
-            const l = dayActs(d); if (!l.length) return '<p class="sub">Nada planejado ainda.</p>';
-            return l.map(a => `<div class="tl ${a.done ? 'done' : ''}" data-a="det" data-i="${a.id}"><div class="tm">${a.time}</div><div class="card"><span class="em">${a.done ? '✅' : CATS[a.cat][0]}</span><div><div class="t"><b>${esc(a.title)}</b></div>${a.place ? `<div class="sub">📍 ${esc(a.place)}</div>` : ''}</div></div></div>`).join('')
-        }
-        function render() {
-            const ds = days(), t = today();
-            $('#fab').style.display = tab === 'mais' ? 'none' : 'block';
-            $('#nav').innerHTML = [['hoje', '🧭', 'Hoje'], ['rot', '🗓️', 'Roteiro'], ['gas', '💰', 'Gastos'], ['mais', '⚙️', 'Mais']].map(x => `<button class="${tab === x[0] ? 'on' : ''}" data-a="tab" data-i="${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join('');
-            let h = '';
-            if (tab === 'hoje') {
-                const day = ds.includes(t) ? t : (t < ds[0] ? ds[0] : ds[ds.length - 1]);
-                const diff = Math.ceil((new Date(S.trip.start + 'T12:00') - new Date(t + 'T12:00')) / 864e5);
-                const pill = diff > 0 ? `⏳ Faltam ${diff} dias` : ds.includes(t) ? `Dia ${ds.indexOf(t) + 1} de ${ds.length}` : 'Viagem concluída 💙';
-                const nx = dayActs(day).find(a => !a.done);
-                h = `<div class="hero"><h1>${esc(S.trip.name)}</h1><p>${dm(S.trip.start)} — ${dm(S.trip.end)}</p><span class="pill">${pill}</span></div>
-  <h2>${ds.includes(t) ? 'Hoje' : 'Primeiro dia'} · Dia ${ds.indexOf(day) + 1} — ${dm(day)}</h2>
-  ${nx ? `<div class="card next" data-a="det" data-i="${nx.id}"><div class="sub">PRÓXIMO</div><b>${nx.time} — ${esc(nx.title)}</b>${nx.place ? `<div class="sub">📍 ${esc(nx.place)}</div>` : ''}<div class="btn g">Ver detalhes</div></div>` : ''}
+<main id="app"></main>
+<button class="fab" id="fab" data-a="fab" aria-label="Adicionar">+</button>
+<nav id="nav"></nav>
+<div id="toast"></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,doc,setDoc,deleteDoc,collection,onSnapshot,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const FB={apiKey:"AIzaSyDoOJQTvAKQQTlwygpowr2spe0auw_IZw8",authDomain:"viagem-9295b.firebaseapp.com",projectId:"viagem-9295b",storageBucket:"viagem-9295b.firebasestorage.app",messagingSenderId:"563404899082",appId:"1:563404899082:web:f2f1e6a6ca432ade08b0f3"};
+const db=initializeFirestore(initializeApp(FB),{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
+const KEY='viagem-rio-v1';
+const CATS={hotel:['🏨','Hotel'],rest:['🍴','Restaurante'],passeio:['🎟️','Passeio'],lazer:['🏖️','Lazer'],transp:['🚗','Transporte'],viagem:['✈️','Viagem'],compras:['🛍️','Compras'],outros:['📌','Outros']};
+const ECATS=['Hotel','Alimentação','Passeios','Transporte','Compras','Outros'];
+const seed=()=>({
+ trip:{name:'Rio de Janeiro ❤️',start:'2026-12-12',end:'2026-12-18',budget:5000},
+ hotel:{name:'Hotel Copacabana',addr:'Av. Atlântica, 1500, Copacabana, Rio de Janeiro',cin:'12/12 às 14:00',cout:'18/12 às 12:00',tel:'(21) 99999-0000',link:'',code:'RIO-48291',note:'Café da manhã incluso.'},
+ acts:[
+ {id:1,date:'2026-12-12',time:'07:00',title:'Voo para o Rio',cat:'viagem',place:'Aeroporto Santos Dumont',addr:'',note:'',link:'',val:0,done:false},
+ {id:2,date:'2026-12-12',time:'14:00',title:'Check-in no hotel',cat:'hotel',place:'Hotel Copacabana',addr:'Av. Atlântica, 1500, Copacabana',note:'',link:'',val:0,done:false},
+ {id:3,date:'2026-12-12',time:'20:00',title:'Jantar',cat:'rest',place:'Arab de Copacabana',addr:'',note:'',link:'',val:160,done:false},
+ {id:4,date:'2026-12-13',time:'08:00',title:'Café da manhã',cat:'rest',place:'Hotel Copacabana',addr:'',note:'',link:'',val:0,done:false},
+ {id:5,date:'2026-12-13',time:'10:30',title:'Cristo Redentor',cat:'passeio',place:'Cosme Velho',addr:'Estr. Cristo Redentor, Cosme Velho, Rio de Janeiro',note:'Chegar 30 minutos antes.',link:'https://www.google.com',val:180,done:false},
+ {id:6,date:'2026-12-13',time:'13:00',title:'Almoço',cat:'rest',place:'Santa Teresa',addr:'',note:'',link:'',val:140,done:false},
+ {id:7,date:'2026-12-13',time:'15:30',title:'Praia de Copacabana',cat:'lazer',place:'Copacabana',addr:'',note:'Levar protetor solar.',link:'',val:0,done:false},
+ {id:8,date:'2026-12-13',time:'20:00',title:'Jantar',cat:'rest',place:'Lapa',addr:'',note:'',link:'',val:220,done:false}],
+ exp:[{id:1,desc:'Hotel (entrada)',cat:'Hotel',val:1200,date:'2026-10-01',note:''},{id:2,desc:'Passagens',cat:'Transporte',val:900,date:'2026-09-20',note:''}],
+ sel:'2026-12-13'
+});
+let S={...seed(),acts:[],exp:[]},T=null;
+try{T=new URLSearchParams(location.search).get('t')||localStorage.getItem(KEY)}catch(e){}
+const col=n=>collection(db,'trips',T,n),ref=(n,id)=>doc(db,'trips',T,n,String(id));
+const sortA=()=>S.acts.sort((x,y)=>x.date.localeCompare(y.date)||x.time.localeCompare(y.time)||(x.ord-y.ord));
+const saveMeta=()=>setDoc(ref('meta','main'),{trip:S.trip,hotel:S.hotel});
+const saveAct=a=>{a.ord=a.ord??Date.now();return setDoc(ref('acts',a.id),a)};
+const saveExp=e=>setDoc(ref('exp',e.id),e);
+const seedAll=()=>{const s=seed(),b=writeBatch(db);b.set(ref('meta','main'),{trip:s.trip,hotel:s.hotel});s.acts.forEach(a=>b.set(ref('acts',a.id),{...a,ord:a.id}));s.exp.forEach(e=>b.set(ref('exp',e.id),e));return b.commit()};
+let unsubs=[];
+function connect(){unsubs.forEach(u=>u());unsubs=[];
+ unsubs.push(onSnapshot(ref('meta','main'),s=>{if(s.exists()){Object.assign(S,s.data());render()}else if(!s.metadata.fromCache)seedAll()},()=>toast('Erro de sincronização')));
+ unsubs.push(onSnapshot(col('acts'),s=>{S.acts=s.docs.map(d=>d.data());sortA();render()}));
+ unsubs.push(onSnapshot(col('exp'),s=>{S.exp=s.docs.map(d=>d.data());S.exp.sort((a,b)=>a.id-b.id);render()}))}
+function askCode(){modal('<h2 style="margin-top:0">Código da viagem</h2><p class="sub">Usem o mesmo código nos dois celulares. Escolham algo difícil de adivinhar.</p><input id="cd" placeholder="ex: rio-2026-xk9"><button class="btn" data-a="code">Entrar</button>')}
+let tab='hoje',onSave=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl=n=>(+n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const dm=d=>d.slice(8)+'/'+d.slice(5,7);
+const MES=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+const days=()=>{const r=[];let d=new Date(S.trip.start+'T12:00');const e=new Date(S.trip.end+'T12:00');while(d<=e){r.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}return r};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const dayActs=d=>S.acts.filter(a=>a.date===d);
+const maps=a=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a.addr||a.place||a.title);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),1600)}
+function tl(d){const l=dayActs(d);if(!l.length)return'<p class="sub">Nada planejado ainda.</p>';
+ return l.map(a=>`<div class="tl ${a.done?'done':''}" data-a="det" data-i="${a.id}"><div class="tm">${a.time}</div><div class="card"><span class="em">${a.done?'✅':CATS[a.cat][0]}</span><div><div class="t"><b>${esc(a.title)}</b></div>${a.place?`<div class="sub">📍 ${esc(a.place)}</div>`:''}</div></div></div>`).join('')}
+function render(){
+ const ds=days(),t=today();
+ $('#fab').style.display=tab==='mais'?'none':'block';
+ $('#nav').innerHTML=[['hoje','🧭','Hoje'],['rot','🗓️','Roteiro'],['gas','💰','Gastos'],['mais','⚙️','Mais']].map(x=>`<button class="${tab===x[0]?'on':''}" data-a="tab" data-i="${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join('');
+ let h='';
+ if(tab==='hoje'){
+  const day=ds.includes(t)?t:(t<ds[0]?ds[0]:ds[ds.length-1]);
+  const diff=Math.ceil((new Date(S.trip.start+'T12:00')-new Date(t+'T12:00'))/864e5);
+  const pill=diff>0?`⏳ Faltam ${diff} dias`:ds.includes(t)?`Dia ${ds.indexOf(t)+1} de ${ds.length}`:'Viagem concluída 💙';
+  const nx=dayActs(day).find(a=>!a.done);
+  h=`<div class="hero"><h1>${esc(S.trip.name)}</h1><p>${dm(S.trip.start)} — ${dm(S.trip.end)}</p><span class="pill">${pill}</span></div>
+  <h2>${ds.includes(t)?'Hoje':'Primeiro dia'} · Dia ${ds.indexOf(day)+1} — ${dm(day)}</h2>
+  ${nx?`<div class="card next" data-a="det" data-i="${nx.id}"><div class="sub">PRÓXIMO</div><b>${nx.time} — ${esc(nx.title)}</b>${nx.place?`<div class="sub">📍 ${esc(nx.place)}</div>`:''}<div class="btn g">Ver detalhes</div></div>`:''}
   <h2>Timeline</h2>${tl(day)}`;
-            }
-            if (tab === 'rot') {
-                h = `<h2>Roteiro</h2><div class="chips">${ds.map(d => `<button class="chip ${d === S.sel ? 'on' : ''}" data-a="sel" data-i="${d}">${d.slice(8)}<br>${MES[+d.slice(5, 7) - 1]}</button>`).join('')}</div>${tl(S.sel)}`;
-            }
-            if (tab === 'gas') {
-                const sp = S.exp.reduce((s, e) => s + e.val, 0), pl = S.acts.reduce((s, a) => s + (+a.val || 0), 0);
-                h = `<h2>Gastos</h2><div class="grid"><div class="card"><span class="sub">Orçamento</span><b>${brl(S.trip.budget)}</b></div><div class="card"><span class="sub">Planejado</span><b>${brl(pl)}</b></div><div class="card"><span class="sub">Gasto</span><b>${brl(sp)}</b></div><div class="card"><span class="sub">Restante</span><b style="color:${S.trip.budget - sp < 0 ? '#d64545' : 'var(--ok)'}">${brl(S.trip.budget - sp)}</b></div></div>
+ }
+ if(tab==='rot'){
+  h=`<h2>Roteiro</h2><div class="chips">${ds.map(d=>`<button class="chip ${d===S.sel?'on':''}" data-a="sel" data-i="${d}">${d.slice(8)}<br>${MES[+d.slice(5,7)-1]}</button>`).join('')}</div>${tl(S.sel)}`;
+ }
+ if(tab==='gas'){
+  const sp=S.exp.reduce((s,e)=>s+e.val,0),pl=S.acts.reduce((s,a)=>s+(+a.val||0),0);
+  h=`<h2>Gastos</h2><div class="grid"><div class="card"><span class="sub">Orçamento</span><b>${brl(S.trip.budget)}</b></div><div class="card"><span class="sub">Planejado</span><b>${brl(pl)}</b></div><div class="card"><span class="sub">Gasto</span><b>${brl(sp)}</b></div><div class="card"><span class="sub">Restante</span><b style="color:${S.trip.budget-sp<0?'#d64545':'var(--ok)'}">${brl(S.trip.budget-sp)}</b></div></div>
   <button class="btn g" data-a="budget">Alterar orçamento</button><h2>Lançamentos</h2>
-  ${S.exp.slice().reverse().map(e => `<div class="card" data-a="expdel" data-i="${e.id}"><div class="row" style="justify-content:space-between"><div><b>${esc(e.desc)}</b><div class="sub">${e.cat} · ${dm(e.date)}${e.note ? ' · ' + esc(e.note) : ''}</div></div><b style="flex:none;text-align:right">${brl(e.val)}</b></div></div>`).join('') || '<p class="sub">Sem gastos.</p>'}<p class="sub">Toque em um gasto para excluir.</p>`;
-            }
-            if (tab === 'mais') {
-                const H = S.hotel;
-                h = `<h2>Hospedagem</h2><div class="card"><b style="font-size:20px">🏨 ${esc(H.name)}</b><p class="sub">📍 ${esc(H.addr)}</p><p>Check-in: ${esc(H.cin)}<br>Check-out: ${esc(H.cout)}${H.tel ? `<br>Tel: ${esc(H.tel)}` : ''}</p>${H.code ? `<p>Reserva: <b>${esc(H.code)}</b></p>` : ''}${H.note ? `<p class="sub">${esc(H.note)}</p>` : ''}
-  <a class="btn" target="_blank" rel="noopener" href="${maps({ addr: H.addr, place: H.name })}">Como chegar</a>
-  <div class="row">${H.code ? '<button class="btn g" data-a="copy">Copiar código</button>' : ''}${H.link ? `<a class="btn g" target="_blank" rel="noopener" href="${esc(H.link)}">Link</a>` : ''}</div>
+  ${S.exp.slice().reverse().map(e=>`<div class="card" data-a="expdel" data-i="${e.id}"><div class="row" style="justify-content:space-between"><div><b>${esc(e.desc)}</b><div class="sub">${e.cat} · ${dm(e.date)}${e.note?' · '+esc(e.note):''}</div></div><b style="flex:none;text-align:right">${brl(e.val)}</b></div></div>`).join('')||'<p class="sub">Sem gastos.</p>'}<p class="sub">Toque em um gasto para excluir.</p>`;
+ }
+ if(tab==='mais'){
+  const H=S.hotel;
+  h=`<h2>Hospedagem</h2><div class="card"><b style="font-size:20px">🏨 ${esc(H.name)}</b><p class="sub">📍 ${esc(H.addr)}</p><p>Check-in: ${esc(H.cin)}<br>Check-out: ${esc(H.cout)}${H.tel?`<br>Tel: ${esc(H.tel)}`:''}</p>${H.code?`<p>Reserva: <b>${esc(H.code)}</b></p>`:''}${H.note?`<p class="sub">${esc(H.note)}</p>`:''}
+  <a class="btn" target="_blank" rel="noopener" href="${maps({addr:H.addr,place:H.name})}">Como chegar</a>
+  <div class="row">${H.code?'<button class="btn g" data-a="copy">Copiar código</button>':''}${H.link?`<a class="btn g" target="_blank" rel="noopener" href="${esc(H.link)}">Link</a>`:''}</div>
   <button class="btn g" data-a="hedit">Editar hotel</button></div>
-  <h2>Viagem</h2><div class="card"><button class="btn g" style="margin:0" data-a="tedit">Editar nome e datas</button><button class="btn g" data-a="theme">Alternar modo escuro</button><button class="btn r" data-a="reset">Restaurar dados de exemplo</button></div>`;
-            }
-            $('#app').innerHTML = '<div>' + h + '</div>';
-        }
-        function modal(html) { const o = document.createElement('div'); o.className = 'ov'; o.innerHTML = '<div class="sheet">' + html + '</div>'; o.addEventListener('click', e => { if (e.target === o) closeM() }); document.body.appendChild(o) }
-        function closeM() { document.querySelectorAll('.ov').forEach(o => o.remove()) }
-        function form(title, fields, vals, cb) {
-            modal(`<h2 style="margin-top:0">${title}</h2>` + fields.map(f => {
-                const v = vals[f[0]] ?? ''; let i;
-                if (f[2] === 'select') i = `<select name="${f[0]}">${f[3].map(o => `<option value="${o[0]}" ${o[0] == v ? 'selected' : ''}>${o[1]}</option>`).join('')}</select>`;
-                else if (f[2] === 'area') i = `<textarea name="${f[0]}" rows="3">${esc(v)}</textarea>`;
-                else i = `<input name="${f[0]}" type="${f[2] || 'text'}" value="${esc(v)}" ${f[2] === 'number' ? 'inputmode="decimal" step="any"' : ''}>`;
-                return `<label>${f[1]}</label>${i}`
-            }).join('') + '<button class="btn" data-a="fsave">Salvar</button><button class="btn g" data-a="close">Cancelar</button>');
-            onSave = () => { const r = {}; document.querySelectorAll('.sheet [name]').forEach(el => r[el.name] = el.value); cb(r) };
-        }
-        const actForm = (a, date) => form(a ? 'Editar atividade' : 'Nova atividade', [['title', 'Título'], ['time', 'Horário', 'time'], ['date', 'Dia', 'select', days().map(d => [d, dm(d)])], ['cat', 'Categoria', 'select', Object.entries(CATS).map(([k, v]) => [k, v[0] + ' ' + v[1]])], ['place', 'Local'], ['addr', 'Endereço'], ['note', 'Observação', 'area'], ['link', 'Link'], ['val', 'Valor (R$)', 'number']], a || { time: '09:00', date, cat: 'outros' }, r => {
-            if (!r.title.trim()) return toast('Informe um título');
-            r.val = +r.val || 0;
-            if (a) Object.assign(a, r); else S.acts.push({ id: Date.now(), done: false, ...r });
-            S.acts.sort((x, y) => x.date === y.date ? x.time.localeCompare(y.time) : x.date.localeCompare(y.date));
-            save(); closeM(); render(); toast('Salvo ✓')
-        });
-        const A = {
-            tab(i) { tab = i; render(); scrollTo(0, 0) },
-            sel(i) { S.sel = i; save(); render() },
-            close: closeM,
-            fsave() { onSave && onSave() },
-            fab() {
-                if (tab === 'gas') form('Novo gasto', [['desc', 'Descrição'], ['val', 'Valor (R$)', 'number'], ['cat', 'Categoria', 'select', ECATS.map(c => [c, c])], ['date', 'Data', 'date'], ['note', 'Observação']], { cat: 'Alimentação', date: today() }, r => { if (!r.desc.trim() || !(+r.val > 0)) return toast('Preencha descrição e valor'); S.exp.push({ id: Date.now(), ...r, val: +r.val }); save(); closeM(); render(); toast('Gasto salvo ✓') });
-                else { const t = today(), ds = days(); actForm(null, tab === 'rot' ? S.sel : (ds.includes(t) ? t : ds[0])) }
-            },
-            det(i) {
-                const a = S.acts.find(x => x.id == i); if (!a) return;
-                modal(`<div class="sub">${CATS[a.cat][0]} ${CATS[a.cat][1]} · ${dm(a.date)}</div><h1 style="margin:4px 0">${esc(a.title)}</h1><b>${a.time}</b>${a.place ? `<p>📍 ${esc(a.place)}</p>` : ''}${a.addr ? `<p class="sub">${esc(a.addr)}</p>` : ''}${a.note ? `<p>📝 ${esc(a.note)}</p>` : ''}${a.val ? `<p><b>${brl(a.val)}</b></p>` : ''}
-  <a class="btn g" target="_blank" rel="noopener" href="${maps(a)}">Como chegar</a>${a.link ? `<a class="btn g" target="_blank" rel="noopener" href="${esc(a.link)}">Abrir link</a>` : ''}
-  <button class="btn" data-a="done" data-i="${a.id}">${a.done ? 'Desfazer conclusão' : 'Concluir'}</button>
+  <h2>Viagem</h2><div class="card"><p class="sub">Código: <b>${esc(T)}</b> · sincronizado</p><button class="btn g" style="margin:0 0 8px" data-a="ncode">Trocar código</button><button class="btn g" style="margin:0" data-a="tedit">Editar nome e datas</button><button class="btn g" data-a="theme">Alternar modo escuro</button><button class="btn r" data-a="reset">Restaurar dados de exemplo</button></div>`;
+ }
+ $('#app').innerHTML='<div>'+h+'</div>';
+}
+function modal(html){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="sheet">'+html+'</div>';o.addEventListener('click',e=>{if(e.target===o)closeM()});document.body.appendChild(o)}
+function closeM(){document.querySelectorAll('.ov').forEach(o=>o.remove())}
+function form(title,fields,vals,cb){
+ modal(`<h2 style="margin-top:0">${title}</h2>`+fields.map(f=>{const v=vals[f[0]]??'';let i;
+  if(f[2]==='select')i=`<select name="${f[0]}">${f[3].map(o=>`<option value="${o[0]}" ${o[0]==v?'selected':''}>${o[1]}</option>`).join('')}</select>`;
+  else if(f[2]==='area')i=`<textarea name="${f[0]}" rows="3">${esc(v)}</textarea>`;
+  else i=`<input name="${f[0]}" type="${f[2]||'text'}" value="${esc(v)}" ${f[2]==='number'?'inputmode="decimal" step="any"':''}>`;
+  return`<label>${f[1]}</label>${i}`}).join('')+'<button class="btn" data-a="fsave">Salvar</button><button class="btn g" data-a="close">Cancelar</button>');
+ onSave=()=>{const r={};document.querySelectorAll('.sheet [name]').forEach(el=>r[el.name]=el.value);cb(r)};
+}
+const actForm=(a,date)=>form(a?'Editar atividade':'Nova atividade',[['title','Título'],['time','Horário','time'],['date','Dia','select',days().map(d=>[d,dm(d)])],['cat','Categoria','select',Object.entries(CATS).map(([k,v])=>[k,v[0]+' '+v[1]])],['place','Local'],['addr','Endereço'],['note','Observação','area'],['link','Link'],['val','Valor (R$)','number']],a||{time:'09:00',date,cat:'outros'},r=>{
+ if(!r.title.trim())return toast('Informe um título');
+ r.val=+r.val||0;
+ if(a){Object.assign(a,r);saveAct(a)}else saveAct({id:Date.now(),done:false,...r});
+ closeM();toast('Salvo ✓')});
+const A={
+ tab(i){tab=i;render();scrollTo(0,0)},
+ sel(i){S.sel=i;render()},
+ close:closeM,
+ code(){const v=$('#cd').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');if(v.length<4)return toast('Mínimo 4 caracteres');T=v;try{localStorage.setItem(KEY,v)}catch(e){}closeM();S.acts=[];S.exp=[];connect();render()},
+ ncode(){askCode()},
+ fsave(){onSave&&onSave()},
+ fab(){if(tab==='gas')form('Novo gasto',[['desc','Descrição'],['val','Valor (R$)','number'],['cat','Categoria','select',ECATS.map(c=>[c,c])],['date','Data','date'],['note','Observação']],{cat:'Alimentação',date:today()},r=>{if(!r.desc.trim()||!(+r.val>0))return toast('Preencha descrição e valor');saveExp({id:Date.now(),...r,val:+r.val});closeM();toast('Gasto salvo ✓')});
+  else{const t=today(),ds=days();actForm(null,tab==='rot'?S.sel:(ds.includes(t)?t:ds[0]))}},
+ det(i){const a=S.acts.find(x=>x.id==i);if(!a)return;
+  modal(`<div class="sub">${CATS[a.cat][0]} ${CATS[a.cat][1]} · ${dm(a.date)}</div><h1 style="margin:4px 0">${esc(a.title)}</h1><b>${a.time}</b>${a.place?`<p>📍 ${esc(a.place)}</p>`:''}${a.addr?`<p class="sub">${esc(a.addr)}</p>`:''}${a.note?`<p>📝 ${esc(a.note)}</p>`:''}${a.val?`<p><b>${brl(a.val)}</b></p>`:''}
+  <a class="btn g" target="_blank" rel="noopener" href="${maps(a)}">Como chegar</a>${a.link?`<a class="btn g" target="_blank" rel="noopener" href="${esc(a.link)}">Abrir link</a>`:''}
+  <button class="btn" data-a="done" data-i="${a.id}">${a.done?'Desfazer conclusão':'Concluir'}</button>
   <div class="row"><button class="btn g" data-a="up" data-i="${a.id}">⬆️ Subir</button><button class="btn g" data-a="dn" data-i="${a.id}">⬇️ Descer</button></div>
-  <div class="row"><button class="btn g" data-a="edit" data-i="${a.id}">Editar</button><button class="btn r" data-a="del" data-i="${a.id}">Excluir</button></div>`)
-            },
-            done(i) { const a = S.acts.find(x => x.id == i); a.done = !a.done; save(); closeM(); render(); toast(a.done ? 'Concluída ✓' : 'Reaberta') },
-            edit(i) { closeM(); actForm(S.acts.find(x => x.id == i)) },
-            del(i) { if (!confirm('Excluir esta atividade?')) return; S.acts = S.acts.filter(x => x.id != i); save(); closeM(); render(); toast('Excluída') },
-            up(i) { mv(i, -1) }, dn(i) { mv(i, 1) },
-            expdel(i) { if (!confirm('Excluir este gasto?')) return; S.exp = S.exp.filter(x => x.id != i); save(); render(); toast('Excluído') },
-            budget() { form('Orçamento', [['b', 'Valor (R$)', 'number']], { b: S.trip.budget }, r => { S.trip.budget = +r.b || 0; save(); closeM(); render(); toast('Salvo ✓') }) },
-            hedit() { form('Hotel', [['name', 'Nome'], ['addr', 'Endereço'], ['cin', 'Check-in'], ['cout', 'Check-out'], ['tel', 'Telefone'], ['link', 'Link'], ['code', 'Código da reserva'], ['note', 'Observações', 'area']], S.hotel, r => { S.hotel = r; save(); closeM(); render(); toast('Salvo ✓') }) },
-            tedit() { form('Viagem', [['name', 'Nome'], ['start', 'Início', 'date'], ['end', 'Fim', 'date']], S.trip, r => { if (r.end < r.start) return toast('Datas inválidas'); Object.assign(S.trip, r); S.sel = days().includes(S.sel) ? S.sel : days()[0]; save(); closeM(); render(); toast('Salvo ✓') }) },
-            copy() { navigator.clipboard?.writeText(S.hotel.code).then(() => toast('Código copiado ✓'), () => toast(S.hotel.code)) },
-            theme() { const r = document.documentElement, d = getComputedStyle(r).getPropertyValue('--bg').trim() === '#10181c'; r.dataset.theme = d ? 'light' : 'dark' },
-            reset() { if (!confirm('Apagar tudo e voltar aos dados de exemplo?')) return; S = seed(); save(); render(); toast('Restaurado') }
-        };
-        function mv(i, d) { const k = S.acts.findIndex(x => x.id == i), a = S.acts[k]; let j = k + d; while (S.acts[j] && S.acts[j].date !== a.date) j += d; if (!S.acts[j]) return toast('Já está no limite');[S.acts[k], S.acts[j]] = [S.acts[j], S.acts[k]]; save(); A.det(i); closeM(); render(); A.det(i) }
-        document.addEventListener('click', e => { const t = e.target.closest('[data-a]'); if (t && A[t.dataset.a]) A[t.dataset.a](t.dataset.i) });
-        render();
-    </script>
+  <div class="row"><button class="btn g" data-a="edit" data-i="${a.id}">Editar</button><button class="btn r" data-a="del" data-i="${a.id}">Excluir</button></div>`)},
+ done(i){const a=S.acts.find(x=>x.id==i);a.done=!a.done;saveAct(a);closeM();toast(a.done?'Concluída ✓':'Reaberta')},
+ edit(i){closeM();actForm(S.acts.find(x=>x.id==i))},
+ del(i){if(!confirm('Excluir esta atividade?'))return;deleteDoc(ref('acts',i));closeM();toast('Excluída')},
+ up(i){mv(i,-1)},dn(i){mv(i,1)},
+ expdel(i){if(!confirm('Excluir este gasto?'))return;deleteDoc(ref('exp',i));toast('Excluído')},
+ budget(){form('Orçamento',[['b','Valor (R$)','number']],{b:S.trip.budget},r=>{S.trip.budget=+r.b||0;saveMeta();closeM();toast('Salvo ✓')})},
+ hedit(){form('Hotel',[['name','Nome'],['addr','Endereço'],['cin','Check-in'],['cout','Check-out'],['tel','Telefone'],['link','Link'],['code','Código da reserva'],['note','Observações','area']],S.hotel,r=>{S.hotel=r;saveMeta();closeM();render();toast('Salvo ✓')})},
+ tedit(){form('Viagem',[['name','Nome'],['start','Início','date'],['end','Fim','date']],S.trip,r=>{if(r.end<r.start)return toast('Datas inválidas');Object.assign(S.trip,r);S.sel=days().includes(S.sel)?S.sel:days()[0];saveMeta();closeM();render();toast('Salvo ✓')})},
+ copy(){navigator.clipboard?.writeText(S.hotel.code).then(()=>toast('Código copiado ✓'),()=>toast(S.hotel.code))},
+ theme(){const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#10181c';r.dataset.theme=d?'light':'dark'},
+ reset(){if(!confirm('Apagar tudo e voltar aos dados de exemplo?'))return;const b=writeBatch(db);S.acts.forEach(a=>b.delete(ref('acts',a.id)));S.exp.forEach(e=>b.delete(ref('exp',e.id)));b.commit().then(seedAll).then(()=>toast('Restaurado'))}
+};
+function mv(i,d){const k=S.acts.findIndex(x=>x.id==i),a=S.acts[k];let j=k+d;while(S.acts[j]&&S.acts[j].date!==a.date)j+=d;if(!S.acts[j])return toast('Já está no limite');const b=S.acts[j],t=a.time,o=a.ord;a.time=b.time;a.ord=b.ord;b.time=t;b.ord=o;saveAct(a);saveAct(b);closeM();A.det(i)}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(t&&A[t.dataset.a])A[t.dataset.a](t.dataset.i)});
+T?connect():askCode();render();
+</script>
 </body>
-
 </html>
